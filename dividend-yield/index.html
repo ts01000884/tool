@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>股票殖利率計算機</title>
+  <link rel="stylesheet" href="../style.css">
   <style>
     body {
       font-family: sans-serif;
@@ -35,6 +36,7 @@
   </style>
 </head>
 <body>
+  <button id="toggleDarkMode">切換亮模式</button>
   <h1>股票殖利率計算機</h1>
 
   <label for="prices">除權息前股價（可輸入多個，以逗號分隔）</label>
@@ -59,6 +61,7 @@
     <tbody id="resultBody"></tbody>
   </table>
 
+  <script src="../theme.js"></script>
   <script>
     const pricesInput = document.getElementById("prices");
     const cashInput = document.getElementById("cash");

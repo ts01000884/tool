@@ -1,0 +1,49 @@
+:root {
+  --bg-color: #121212;
+  --text-color: #ffffff;
+  --link-color: #4dabf7;
+  --table-border-color: #444;
+  --table-header-bg: #333;
+}
+
+body {
+  font-family: sans-serif;
+  padding: 2em;
+  max-width: 800px;
+  margin: auto;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+}
+
+a {
+  color: var(--link-color);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 2em;
+}
+
+th, td {
+  border: 1px solid var(--table-border-color);
+  padding: 0.5em;
+  text-align: center;
+}
+
+th {
+  background-color: var(--table-header-bg);
+}
+
+.light-mode {
+  --bg-color: #ffffff;
+  --text-color: #000000;
+  --link-color: #0077cc;
+  --table-border-color: #ccc;
+  --table-header-bg: #f2f2f2;
+}
