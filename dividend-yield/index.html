@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <title>股票殖利率計算機</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 2em;
+      max-width: 800px;
+      margin: auto;
+    }
+    label {
+      display: block;
+      margin: 1em 0 0.25em;
+    }
+    input[type="number"], input[type="text"] {
+      width: 100%;
+      padding: 0.5em;
+      font-size: 1em;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 2em;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 0.5em;
+      text-align: center;
+    }
+    th {
+      background-color: #f2f2f2;
+    }
+  </style>
+</head>
+<body>
+  <h1>股票殖利率計算機</h1>
+
+  <label for="prices">除權息前股價（可輸入多個，以逗號分隔）</label>
+  <input type="text" id="prices" placeholder="例如：22,21,20,19">
+
+  <label for="cash">現金股利（元）</label>
+  <input type="number" id="cash" step="0.01" value="0.91">
+
+  <label for="stock">股票股利（元）</label>
+  <input type="number" id="stock" step="0.01" value="0.34">
+
+  <table id="resultTable" style="display:none;">
+    <thead>
+      <tr>
+        <th>原始股價</th>
+        <th>除權息後股價</th>
+        <th>現金殖利率(%)</th>
+        <th>股票殖利率(%)</th>
+        <th>合計殖利率(%)</th>
+      </tr>
+    </thead>
+    <tbody id="resultBody"></tbody>
+  </table>
+
+  <script>
+    const pricesInput = document.getElementById("prices");
+    const cashInput = document.getElementById("cash");
+    const stockInput = document.getElementById("stock");
+    const resultTable = document.getElementById("resultTable");
+    const resultBody = document.getElementById("resultBody");
+
+    function calculateAndDisplay() {
+      const priceValues = pricesInput.value.split(',').map(v => parseFloat(v.trim())).filter(v => !isNaN(v));
+      const cash = parseFloat(cashInput.value);
+      const stock = parseFloat(stockInput.value);
+
+      if (!priceValues.length || isNaN(cash) || isNaN(stock)) {
+        resultTable.style.display = "none";
+        return;
+      }
+
+      resultBody.innerHTML = "";
+
+      priceValues.forEach(price => {
+        const stockYield = stock / (10 + stock) * 100;
+        const cashYield = (cash / price) * 100;
+        const adjustedPrice = (price - cash) / (1 + stock / 10);
+        const totalYield = stockYield + cashYield;
+
+        const row = `<tr>
+          <td>${price.toFixed(2)}</td>
+          <td>${adjustedPrice.toFixed(2)}</td>
+          <td>${cashYield.toFixed(2)}</td>
+          <td>${stockYield.toFixed(2)}</td>
+          <td>${totalYield.toFixed(2)}</td>
+        </tr>`;
+
+        resultBody.innerHTML += row;
+      });
+
+      resultTable.style.display = "table";
+    }
+
+    pricesInput.addEventListener("input", calculateAndDisplay);
+    cashInput.addEventListener("input", calculateAndDisplay);
+    stockInput.addEventListener("input", calculateAndDisplay);
+  </script>
+</body>
+</html>
