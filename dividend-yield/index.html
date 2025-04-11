@@ -33,11 +33,65 @@
     th {
       background-color: #f2f2f2;
     }
+    
+    /* 新增股票查詢相關樣式 */
+    .stock-search {
+      margin: 1.5em 0;
+      padding: 1em;
+      background-color: #f9f9f9;
+      border-radius: 5px;
+      border: 1px solid #ddd;
+    }
+    
+    .search-result {
+      margin-top: 0.7em;
+      font-weight: bold;
+    }
+    
+    .search-row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    
+    .search-row input {
+      flex: 1;
+      max-width: 150px;
+    }
+    
+    .search-row button {
+      padding: 0.5em 1em;
+      background-color: #0077cc;
+      color: white;
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
+    }
+    
+    .search-row button:hover {
+      background-color: #005fa3;
+    }
+    
+    .error-message {
+      color: #d32f2f;
+      font-size: 0.9em;
+    }
   </style>
 </head>
 <body>
+  <div id="currentTime" style="text-align: right; font-size: 0.9em; color: #555;"></div>
   <button id="toggleDarkMode">切換亮模式</button>
   <h1>股票殖利率計算機</h1>
+
+  <!-- 股票查詢區塊 -->
+  <div class="stock-search">
+    <h3>股票價格查詢</h3>
+    <div class="search-row">
+      <input type="text" id="stockCode" placeholder="輸入股票代碼" maxlength="6">
+      <button id="searchButton">查詢股價</button>
+    </div>
+    <div class="search-result" id="searchResult"></div>
+  </div>
 
   <label for="prices">除權息前股價（可輸入多個，以逗號分隔）</label>
   <input type="text" id="prices" placeholder="例如：22,21,20,19">
@@ -62,12 +116,51 @@
   </table>
 
   <script src="../theme.js"></script>
+  <script src="../time.js"></script>
+  <script src="../stock-price.js"></script>
   <script>
     const pricesInput = document.getElementById("prices");
     const cashInput = document.getElementById("cash");
     const stockInput = document.getElementById("stock");
     const resultTable = document.getElementById("resultTable");
     const resultBody = document.getElementById("resultBody");
+    const stockCodeInput = document.getElementById("stockCode");
+    const searchButton = document.getElementById("searchButton");
+    const searchResult = document.getElementById("searchResult");
+
+    // 新增股價查詢功能
+    searchButton.addEventListener("click", async () => {
+      const stockCode = formatStockCode(stockCodeInput.value);
+      
+      if (!stockCode || stockCode.length < 4) {
+        searchResult.innerHTML = '<span class="error-message">請輸入有效的股票代碼</span>';
+        return;
+      }
+
+      searchResult.textContent = "查詢中...";
+      
+      try {
+        const result = await fetchStockPrice(stockCode);
+        
+        if (result.success) {
+          searchResult.textContent = `${stockCode} - 目前股價：${result.price} 元`;
+          
+          // 將查詢到的股價加入輸入框
+          if (pricesInput.value) {
+            pricesInput.value += `, ${result.price}`;
+          } else {
+            pricesInput.value = result.price.toString();
+          }
+          
+          // 觸發計算
+          calculateAndDisplay();
+        } else {
+          searchResult.innerHTML = `<span class="error-message">${result.message}</span>`;
+        }
+      } catch (error) {
+        searchResult.innerHTML = '<span class="error-message">查詢時發生錯誤，請稍後再試</span>';
+      }
+    });
 
     function calculateAndDisplay() {
       const priceValues = pricesInput.value.split(',').map(v => parseFloat(v.trim())).filter(v => !isNaN(v));

@@ -12,12 +12,62 @@
     a { color: #0077cc; text-decoration: none; }
     a:hover { text-decoration: underline; }
     .desc { color: #555; font-size: 0.95em; }
+    /* 股票查詢樣式 */
+    .stock-search-box {
+      margin: 2em 0;
+      padding: 1.5em;
+      background-color: #f5f5f5;
+      border-radius: 8px;
+      border: 1px solid #e0e0e0;
+    }
+    .stock-search-form {
+      display: flex;
+      gap: 10px;
+      margin-top: 1em;
+    }
+    .stock-search-form input {
+      flex: 1;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      max-width: 150px;
+    }
+    .stock-search-form button {
+      padding: 8px 16px;
+      background-color: #0077cc;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .stock-search-form button:hover {
+      background-color: #005fa3;
+    }
+    .stock-result {
+      margin-top: 1em;
+      font-weight: bold;
+    }
+    .error-message {
+      color: #d32f2f;
+    }
   </style>
 </head>
 <body>
+  <div id="currentTime" style="text-align: right; font-size: 0.9em; color: #555;"></div>
   <button id="toggleDarkMode">切換亮模式</button>
   <h1>📊 我的財務小工具</h1>
   <p>這裡整理了我自己寫的一些股票與財務小工具，歡迎使用：</p>
+
+  <!-- 新增股票價格查詢區塊 -->
+  <div class="stock-search-box">
+    <h2>🔍 股票價格查詢</h2>
+    <p>輸入股票代碼以查詢目前股價：</p>
+    <div class="stock-search-form">
+      <input type="text" id="stockCode" placeholder="輸入股票代碼" maxlength="6">
+      <button id="searchButton">查詢股價</button>
+    </div>
+    <div class="stock-result" id="stockResult"></div>
+  </div>
 
   <ul>
     <li>
@@ -29,5 +79,38 @@
 
   <p style="margin-top: 2em; font-size: 0.9em; color: #888;">設計 by 你自己 😎</p>
   <script src="theme.js"></script>
+  <script src="time.js"></script>
+  <script src="stock-price.js"></script>
+  <script>
+    // 股票價格查詢功能
+    document.addEventListener("DOMContentLoaded", () => {
+      const stockCodeInput = document.getElementById("stockCode");
+      const searchButton = document.getElementById("searchButton");
+      const stockResult = document.getElementById("stockResult");
+
+      searchButton.addEventListener("click", async () => {
+        const stockCode = formatStockCode(stockCodeInput.value);
+        
+        if (!stockCode || stockCode.length < 4) {
+          stockResult.innerHTML = '<span class="error-message">請輸入有效的股票代碼</span>';
+          return;
+        }
+
+        stockResult.textContent = "查詢中...";
+        
+        try {
+          const result = await fetchStockPrice(stockCode);
+          
+          if (result.success) {
+            stockResult.innerHTML = `<span style="color:#28a745">${stockCode} - ${result.price} 元</span>`;
+          } else {
+            stockResult.innerHTML = `<span class="error-message">${result.message}</span>`;
+          }
+        } catch (error) {
+          stockResult.innerHTML = '<span class="error-message">查詢時發生錯誤，請稍後再試</span>';
+        }
+      });
+    });
+  </script>
 </body>
 </html>
