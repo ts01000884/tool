@@ -1,0 +1,90 @@
+/* 股票查詢模組相關樣式 */
+
+.stock-search-box {
+  margin: 1.5em 0;
+  padding: 1.2em;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.stock-search-box h3 {
+  margin-top: 0;
+  margin-bottom: 0.8em;
+  font-size: 1.3em;
+  color: #333;
+}
+
+.stock-search-form {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 1em;
+}
+
+.stock-search-form input.stock-code-input {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1em;
+  max-width: 150px;
+}
+
+.stock-search-form button.stock-search-button {
+  padding: 8px 16px;
+  background-color: #0077cc;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.95em;
+  transition: background-color 0.2s;
+}
+
+.stock-search-form button.stock-search-button:hover {
+  background-color: #005fa3;
+}
+
+.stock-result {
+  min-height: 1.5em;
+  font-weight: bold;
+  margin-top: 0.5em;
+}
+
+.stock-result .error-message {
+  color: #d32f2f;
+  font-size: 0.95em;
+}
+
+.stock-result .success-message {
+  color: #28a745;
+}
+
+/* 深色模式支援 */
+.dark-mode .stock-search-box {
+  background-color: #2a2a2a;
+  border-color: #444;
+}
+
+.dark-mode .stock-search-box h3 {
+  color: #e0e0e0;
+}
+
+.dark-mode .stock-search-form input.stock-code-input {
+  background-color: #333;
+  border-color: #555;
+  color: #fff;
+}
+
+.dark-mode .stock-search-form button.stock-search-button {
+  background-color: #0088dd;
+}
+
+.dark-mode .stock-search-form button.stock-search-button:hover {
+  background-color: #00a0ff;
+}
+
+.dark-mode .stock-result .success-message {
+  color: #4caf50;
+}
