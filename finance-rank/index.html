@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>金融股排行榜 - 我的財務工具集</title>
+  <!-- 引用 CSS 檔案 -->
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/stock-query.css">
+  <link rel="stylesheet" href="finance-rank.css">
+</head>
+<body>
+  <div class="page-header">
+    <div>
+      <a href="../" class="back-link">回首頁</a>
+      <button id="toggleDarkMode">切換深色模式</button>
+    </div>
+    <div class="page-meta">
+      <div id="currentTime"></div>
+    </div>
+  </div>
+
+  <h1>🏦 金融股排行榜</h1>
+  <p>此頁面展示各金融股的即時股價、配股/配息資訊及殖利率數據。</p>
+
+  <div id="rankSettings" class="tool-container">
+    <h3>排行設定</h3>
+    <div class="settings-form">
+      <label>
+        <input type="checkbox" id="showAll" checked> 顯示所有資訊
+      </label>
+      <label>
+        <input type="checkbox" id="sortByCashYield"> 依現金殖利率排序
+      </label>
+      <label>
+        <input type="checkbox" id="sortByTotalYield"> 依複合殖利率排序
+      </label>
+      <button id="refreshAllData">重新整理所有資料</button>
+      <button id="fetchDividendData" title="從證交所API獲取最新配息資料">更新配息資料</button>
+    </div>
+    <div id="dataSourceInfo" class="data-source-info">
+      <p><small>配息資料來源: 臺灣證券交易所 - 最後更新時間: <span id="lastDividendUpdate">尚未更新</span></small></p>
+    </div>
+  </div>
+
+  <div id="stockRankContainer" class="tool-container">
+    <div class="data-loading">正在載入金融股資料...</div>
+    <table id="stockRankTable" style="display: none">
+      <thead>
+        <tr>
+          <th>代碼</th>
+          <th>股票名稱</th>
+          <th>現價</th>
+          <th>現金股利</th>
+          <th>股票股利</th>
+          <th>現金殖利率</th>
+          <th>股票殖利率</th>
+          <th>複合殖利率</th>
+          <th>除權息日</th>
+          <th>操作</th>
+        </tr>
+      </thead>
+      <tbody id="stockRankBody">
+        <!-- 動態產生股票資料列 -->
+      </tbody>
+      <tfoot>
+        <tr>
+          <td colspan="10" style="text-align: left; padding: 10px; font-size: 0.9em; border-top: 1px solid #ddd;">
+            <strong>說明：</strong><br>
+            <strong>黑體字</strong>: 已確認的配息配股資料<br>
+            <span style="color: green;">綠色字</span>: 預估配息配股資料<br>
+            「-」: 暫無配息配股資訊<br>
+            配息資料來源: 臺灣證券交易所公開資訊觀測站
+          </td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+
+  <div id="progressInfo" class="progress-container">
+    <div class="progress-bar">
+      <div id="progressBar" class="progress-inner"></div>
+    </div>
+    <div id="progressText" class="progress-text">準備獲取資料...</div>
+  </div>
+
+  <div class="page-footer">
+    <p>設計 by 你自己 😎 - 版權所有 © 2025</p>
+  </div>
+
+  <!-- 配息資料API URL -->
+  <script>
+    const DIVIDEND_API_URL = 'https://openapi.twse.com.tw/v1/exchangeReport/TWT48U_ALL';
+    
+    // 為更新配息資料按鈕添加事件監聽
+    document.addEventListener('DOMContentLoaded', function() {
+      const fetchDividendButton = document.getElementById('fetchDividendData');
+      if (fetchDividendButton) {
+        fetchDividendButton.addEventListener('click', function() {
+          manualFetchDividendData();
+        });
+      }
+    });
+    
+    // 手動觸發獲取配息資料
+    function manualFetchDividendData() {
+      const button = document.getElementById('fetchDividendData');
+      const lastUpdateElement = document.getElementById('lastDividendUpdate');
+      
+      // 禁用按鈕，顯示載入中
+      if (button) {
+        button.disabled = true;
+        button.textContent = '獲取中...';
+      }
+      
+      // 使用相同的CORS代理服務來解決跨域問題
+      const corsProxies = [
+        'https://cors-anywhere.herokuapp.com/',
+        'https://corsproxy.io/?',
+        'https://api.allorigins.win/raw?url=',
+        'https://proxy.cors.sh/',
+        'https://cors-proxy.htmldriven.com/?url=',
+        'https://cors.eu.org/',
+        'https://thingproxy.freeboard.io/fetch/',
+        'https://crossorigin.me/',
+        'https://api.codetabs.com/v1/proxy?quest=',
+        'https://cors.bridged.cc/'
+      ];
+      
+      // 嘗試所有代理
+      fetchWithProxies(corsProxies, 0);
+      
+      // 遞迴嘗試所有代理
+      function fetchWithProxies(proxies, index) {
+        if (index >= proxies.length) {
+          // 所有代理都失敗了
+          console.error('所有CORS代理都失敗，無法獲取配息資料');
+          alert('配息資料獲取失敗: 所有代理服務都無法訪問');
+          
+          // 恢復按鈕狀態
+          if (button) {
+            button.disabled = false;
+            button.textContent = '更新配息資料';
+          }
+          return;
+        }
+        
+        const proxy = proxies[index];
+        const proxyUrl = `${proxy}${encodeURIComponent(DIVIDEND_API_URL)}`;
+        
+        // 呼叫API獲取資料
+        fetch(proxyUrl, {
+          method: 'GET',
+          headers: {
+            'accept': 'application/json',
+            'If-Modified-Since': 'Mon, 26 Jul 1997 05:00:00 GMT',
+            'Cache-Control': 'no-cache',
+            'Pragma': 'no-cache'
+          }
+        })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`API回應錯誤: ${response.status}`);
+          }
+          return response.json();
+        })
+        .then(data => {
+          // 保存數據到全局變量
+          window.dividendData = data;
+          
+          // 更新最後更新時間
+          const now = new Date();
+          const formattedDate = `${now.getFullYear()}/${(now.getMonth()+1).toString().padStart(2, '0')}/${now.getDate().toString().padStart(2, '0')} ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+          
+          if (lastUpdateElement) {
+            lastUpdateElement.textContent = formattedDate;
+          }
+          
+          // 重新整理股票資料
+          if (typeof startDataFetching === 'function') {
+            startDataFetching(true);
+          }
+          
+          console.log('配息資料獲取成功', data);
+          alert('配息資料更新成功！');
+          
+          // 恢復按鈕狀態
+          if (button) {
+            button.disabled = false;
+            button.textContent = '更新配息資料';
+          }
+        })
+        .catch(error => {
+          console.error(`使用代理 ${proxy} 獲取配息資料失敗:`, error);
+          // 嘗試下一個代理
+          fetchWithProxies(proxies, index + 1);
+        });
+      }
+    }
+  </script>
+
+  <!-- 引用 JS 檔案 -->
+  <script src="../js/theme.js"></script>
+  <script src="../js/time.js"></script>
+  <script src="../js/stock-query.js"></script>
+  <script src="finance-rank.js"></script>
+</body>
+</html>

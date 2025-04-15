@@ -1,0 +1,203 @@
+/* 金融股排行榜專用CSS */
+
+/* 排行榜設定區塊 */
+.settings-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.settings-form label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+}
+
+/* 排行榜表格樣式 */
+#stockRankTable {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+#stockRankTable th {
+  position: sticky;
+  top: 0;
+  background-color: #f2f2f2;
+  z-index: 1;
+  white-space: nowrap;
+  font-size: 0.9em;
+}
+
+.dark-mode #stockRankTable th {
+  background-color: #333;
+}
+
+#stockRankTable td {
+  vertical-align: middle;
+  padding: 8px;
+  font-size: 0.95em;
+}
+
+#stockRankTable tr:nth-child(even) {
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+.dark-mode #stockRankTable tr:nth-child(even) {
+  background-color: rgba(255, 255, 255, 0.02);
+}
+
+#stockRankTable tr:hover {
+  background-color: rgba(0, 119, 204, 0.05);
+}
+
+.dark-mode #stockRankTable tr:hover {
+  background-color: rgba(77, 172, 255, 0.1);
+}
+
+/* 數值欄位靠右對齊 */
+.number-cell {
+  text-align: right;
+}
+
+/* 不同殖利率的顏色表示 */
+.yield-high {
+  color: #2e7d32;
+  font-weight: bold;
+}
+
+.yield-medium {
+  color: #1976d2;
+}
+
+.yield-low {
+  color: #757575;
+}
+
+.dark-mode .yield-high {
+  color: #81c784;
+}
+
+.dark-mode .yield-medium {
+  color: #64b5f6;
+}
+
+.dark-mode .yield-low {
+  color: #bdbdbd;
+}
+
+/* 操作按鈕 */
+.action-cell {
+  white-space: nowrap;
+}
+
+.action-btn {
+  padding: 3px 8px;
+  font-size: 0.85em;
+  margin-right: 5px;
+}
+
+/* 載入中狀態 */
+.data-loading {
+  text-align: center;
+  padding: 20px;
+  color: #666;
+  font-style: italic;
+}
+
+.dark-mode .data-loading {
+  color: #aaa;
+}
+
+/* 進度顯示 */
+.progress-container {
+  margin: 20px 0;
+  padding: 15px;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+  border: 1px solid #eee;
+}
+
+.dark-mode .progress-container {
+  background-color: #2a2a2a;
+  border-color: #444;
+}
+
+.progress-bar {
+  height: 12px;
+  background-color: #e0e0e0;
+  border-radius: 6px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.dark-mode .progress-bar {
+  background-color: #444;
+}
+
+.progress-inner {
+  height: 100%;
+  background-color: #0077cc;
+  width: 0%;
+  transition: width 0.3s ease;
+}
+
+.dark-mode .progress-inner {
+  background-color: #4dacff;
+}
+
+.progress-text {
+  font-size: 0.9em;
+  color: #666;
+  text-align: center;
+}
+
+.dark-mode .progress-text {
+  color: #aaa;
+}
+
+/* 返回首頁連結 */
+.back-link {
+  display: inline-block;
+  margin-right: 15px;
+  padding: 8px 16px;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+  text-decoration: none;
+  color: #333;
+}
+
+.back-link:hover {
+  background-color: #e5e5e5;
+  text-decoration: none;
+}
+
+.dark-mode .back-link {
+  background-color: #333;
+  color: #eee;
+}
+
+.dark-mode .back-link:hover {
+  background-color: #444;
+}
+
+/* 響應式設計 */
+@media (max-width: 900px) {
+  #stockRankTable {
+    display: block;
+    overflow-x: auto;
+  }
+  
+  .settings-form {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .settings-form label, 
+  .settings-form button {
+    margin-bottom: 10px;
+  }
+}
