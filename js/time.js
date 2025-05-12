@@ -1,6 +1,7 @@
 /**
  * 顯示目前時間功能
  * 在頁面上動態更新顯示目前時間，帶有精美樣式
+ * 特別強調今天日期
  */
 
 // 當 DOM 內容載入完成後初始化
@@ -19,7 +20,10 @@ function initCurrentTime() {
   timeElement.innerHTML = `
     <div class="fancy-time">
       <div class="date-part">
-        <span class="day"></span>
+        <div class="today-highlight">
+          <span class="day"></span>
+          <span class="weekday"></span>
+        </div>
         <span class="month-year"></span>
       </div>
       <div class="time-part">
@@ -50,6 +54,7 @@ function updateCurrentTime(container) {
   
   // 獲取時間各部分元素
   const dayElement = container.querySelector('.day');
+  const weekdayElement = container.querySelector('.weekday');
   const monthYearElement = container.querySelector('.month-year');
   const timeElement = container.querySelector('.time-value');
   const secondsElement = container.querySelector('.seconds');
@@ -68,7 +73,8 @@ function updateCurrentTime(container) {
   const weekday = now.toLocaleDateString('zh-TW', { weekday: 'short' });
   
   // 更新各元素內容
-  dayElement.innerHTML = `${day} <small>${weekday}</small>`;
+  dayElement.textContent = day;
+  weekdayElement.textContent = weekday;
   monthYearElement.textContent = `${month} ${year}`;
   timeElement.textContent = `${hours}:${minutes}`;
   
@@ -104,18 +110,45 @@ function addTimeStyles() {
       margin-bottom: 3px;
     }
     
-    .day {
-      font-size: 1.1em;
-      font-weight: 600;
+    .today-highlight {
       display: flex;
-      align-items: baseline;
-      justify-content: flex-end;
+      align-items: center;
+      background-color: #007bff;
+      color: white;
+      border-radius: 8px;
+      padding: 3px 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+      margin-bottom: 3px;
+      position: relative;
+      overflow: hidden;
     }
     
-    .day small {
-      margin-left: 5px;
-      font-size: 0.75em;
+    .today-highlight:before {
+      content: "今天";
+      position: absolute;
+      font-size: 0.6em;
+      top: -1px;
+      left: 3px;
+      background-color: #ff6b6b;
+      color: white;
+      padding: 1px 3px;
+      border-radius: 3px;
+      transform: rotate(-10deg);
       opacity: 0.8;
+    }
+    
+    .day {
+      font-size: 1.3em;
+      font-weight: 700;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+      display: inline-block;
+    }
+    
+    .weekday {
+      margin-left: 6px;
+      font-size: 0.8em;
+      opacity: 0.9;
+      font-weight: 500;
     }
     
     .month-year {
@@ -160,6 +193,15 @@ function addTimeStyles() {
     /* 深色模式適配 */
     .dark-mode .fancy-time {
       color: #e1e1e1;
+    }
+    
+    .dark-mode .today-highlight {
+      background-color: #0066cc;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.4);
+    }
+    
+    .dark-mode .today-highlight:before {
+      background-color: #e74c3c;
     }
   `;
   
