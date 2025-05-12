@@ -2,6 +2,7 @@
  * 主題切換功能
  * 提供網站深色模式/淺色模式切換功能
  */
+// 這段程式碼會在 DOM 內容載入完成後執行
 
 // 當 DOM 內容載入完成後初始化
 document.addEventListener('DOMContentLoaded', () => {
